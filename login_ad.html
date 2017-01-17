@@ -1,0 +1,21 @@
+<template name="LoginAd">
+	<div class="container">
+		<form id="login_form" class="account-form" role="form">
+			<h2>
+				Please log in
+			</h2>
+			{{#if errorMessage}}
+			<div class="alert alert-warning">
+				{{errorMessage}}
+			</div>
+			{{/if}}
+			<div id="login-with-password" style="padding-top: 10px;">
+				<input id="login_username" type="text" class="form-control" placeholder="AD Username" required autofocus>
+				<input id="login_password" type="password" class="form-control" placeholder="Password" required>
+				<button class="btn btn-lg btn-primary btn-block" type="submit" data-loading-text="Please wait...">
+					Log in
+				</button>
+			</div>
+		</form>
+	</div>
+</template>

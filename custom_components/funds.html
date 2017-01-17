@@ -1,0 +1,228 @@
+<template name="Funds">
+	<div class="page-container container" id="content">
+		<div class="row" id="title_row">
+			<div class="col-md-12">
+			
+				&nbsp;<br/>
+				<div id="page_menu" class="pull-right">
+				</div>
+			</div>
+		</div>	
+		<div class="row">
+			<div class="col-md-12">
+			
+				<form class="form-inline">
+					<div id="fund-code-group" class="form-group{{ jsfundcodegroup }}">
+						<input type="text" class="form-control" id="query" value="{{querytext}}" placeholder="Fund Code">
+						<button type="submit" class="form-control btn btn-primary">
+							{{#if searching}}
+							<span class="fa fa-circle-o-notch fa-spin fa-fw">
+							</span>
+							{{else}}
+							<span class="fa fa-search">
+							</span>
+							{{/if}}	
+						</button>
+						
+						{{#if searching}}
+							<span id="fund-help-block" class="help-block">
+								Searching...
+							</span>
+						{{else}}
+							{{> fund_help_block fund=fund }}
+						{{/if}}
+						
+					</div>
+					{{#if userHasRole "funds.grantProtocolAccess"}}
+						{{> animal_help_block fund=fund searching=searching }}
+					{{/if}}
+				</form>	
+				
+				
+		
+			</div>
+			
+		</div>
+		<div class="row">	
+			<div class="col-md-12">
+			{{#if fund.Banner}}
+			
+					{{#if canViewFund fund.Banner.FUND_CODE}}
+					<ul class="nav nav-tabs">
+					{{#if userHasRole "funds.grantProtocolAccess"}}
+					  {{#if fund.eSirius }}
+					  {{#each arrayify fund.eSirius}}
+					  <li><a href="#protocol-tab-{{name}}">Protocol {{name}}</a></li>
+					  {{/each}}
+					  {{/if}}
+					  {{#if fund.Grad}}
+					  <li><a href="#grant-tab">Proposal {{Grad.PROPOSAL_NO}}</a></li>
+					  {{/if}}
+					{{/if}}
+					   <li class="active"><a href="#fund-tab">Fund {{Banner.FUND_CODE}}</a></li>
+					</ul>
+					<div class="tab-content">
+					{{#if userHasRole "funds.grantProtocolAccess"}}
+					  {{#if fund.eSirius }}
+					  {{#each arrayify fund.eSirius}}
+						{{> protocols}}
+					  {{/each}}
+					  {{/if}}
+					  {{#if fund.Grad }}
+					  {{> grant fund}}
+					  {{/if}}
+					 {{/if}} 
+					  {{> fund_t fund}}
+					</div>
+					{{/if}}
+	
+			{{/if}}
+			</div>
+		</div>
+	</div>
+</template>
+
+<template name="fund_help_block">
+	<span id="fund-help-block" class="help-block">
+	{{#if fund }}
+		{{{ helpblock fund }}}
+	{{else}}
+		{{{ helpblock }}}
+	{{/if}}
+	</span>
+</template>
+
+<template name="animal_help_block">
+	{{#if searching}}
+		{{else}}
+		{{#if fund }}
+		<div id="animal-help-block" class="form-group pull-right">
+			{{{ animalhelpblock fund }}}
+		</div>
+		{{/if}}
+	{{/if}}
+</template>
+
+<template name="fund_t">
+<div id="fund-tab" class="tab-pane active">
+<h3 id="fund-tab-fund">Fund {{Banner.FUND_CODE}} Detail</h3>
+<table id="fund-table" class="table table-condensed">
+<thead>
+<tr>
+	<th>Responsible Person</th>
+	<th>Lab</th>
+	<th>Period</th>
+	<th>Description</th>
+	<th>Previous Fund</th>
+</tr>
+</thead>
+<tbody>
+	<tr>
+	<td id="fund-tab-r-person">{{Banner.RESPONSIBLE_PERSON}}</td>
+	<td id="fund-tab-lab">{{Banner.ORG_CODE}}</td>
+	<td id="fund-tab-period">{{Banner.FUND_START_DATE}} - {{Banner.FUND_END_DATE}}</td>
+	<td id="fund-tab-description">{{Banner.FUND_TITLE}}</td>
+	<td id="fund-tab-previous-fund">{{Banner.OLD_FUND}}</td>
+	</tr>
+</tbody>
+</table>
+</div>
+</template>
+
+<template name="grant">
+	<div id="grant-tab" class="tab-pane">
+  <h3 id="grant-tab-proposal_no">Proposal {{Grad.PROPOSAL_NO}} Detail</h3>
+  <table id="grant-table" class="table table-condensed table-bordered">
+	<tbody>
+	<tr>
+		<th>PI</th>
+		<th>Species on Grant</th>
+		<th>Protocols Linked</th>
+	</tr>
+	<tr>
+	<td id="grant-tab-pi">{{Grad.PI_FLW_SORT}}</td>
+	<td rowspan="3" id="grant-tab-species">{{#each species in Grad.Species}}<span class="species-list">{{species}}</span>{{/each}}</td>
+	<td rowspan="7" id="grant-tab-protocols"></td>
+	</tr>
+
+	<tr>
+		<th>Agency</th>
+	</tr>
+
+	<tr>
+	<td id="grant-tab-agency">{{Grad.PRPSL_FUNDING_AGNCY_ID}}</td>
+	</tr>
+
+	<tr>
+		<th>Grant Number</th>
+		<th>Notes on Animal Use</th>
+	</tr>
+
+	<tr>
+	<td id="grant-tab-grant">{{Grad.agency_number_combined}}</td>
+	<td id="grant-tab-notes" rowspan="3">{{Grad.Species_Comment}}</td>
+	</tr>
+
+	<tr>
+		<th>Grant Period</th>
+	</tr>
+
+	<tr>
+	<td id="grant-tab-period">{{Grad.Comp_Per_Start}} - {{Grad.PRPSL_END_DATE}}</td>
+	</tr>
+	</tbody>
+  </table>
+  </div>
+</template>
+
+
+<template name="protocols">
+	<div id="protocol-tab-{{name}}" class="tab-pane">
+		<h3 id="protocol-tab-protocol-{{name}}">Protocol {{name}}</h3>
+		<table class="protocol-table table table-bordered">
+		<tbody>
+		<tr>
+			<th>PI</th>
+			<th>Species</th>
+			<th>Agencies</th>
+			<th>Grants</th>
+		</tr>
+		<tr>
+			<td class="protocol-tab-pi">{{value.PI_NAME}}</td>
+			<td class="protocol-tab-species" rowspan="9">{{#each species in value.SPECIES}}<span class="species-list">{{species}}</span>{{/each}}</td>
+			<td class="protocol-tab-agencies" rowspan="9">{{#each agency in value.AGENCIES}}<span class="agencies-list">{{agency}}</span>{{/each}}</td>
+			<td class="protocol-tab-grants" rowspan="9">{{#each grant in value.GRANTS}}<span class="grants-list">{{grant}}</span>{{/each}}</td>
+		</tr>
+		<tr>
+			<th>Status</th>
+		</tr>
+		<tr>
+			<td class="protocol-tab-status">{{value.STATUS}}</td>
+		</tr>
+		<tr>
+			<th>Approval Date</th>
+		</tr>
+		<tr>
+			<td class="protocol-tab-approval-date">{{value.D_APPROVE}}</td>
+		</tr>
+		<tr>
+			<th>Expire Date</th>
+		</tr>
+		<tr>
+			<td class="protocol-tab-expire-date">{{value.D_EXPIRE}}</td>
+		</tr>
+		<tr>
+			<th>Previous Protocol</th>
+		</tr>
+		<tr>
+			<td class="protocol-tab-previous-protocol"></td>
+		</tr>
+		</tbody>
+		</table>
+	</div>
+	
+</template>
+
+<template name="nada">
+<span class="help-block form-group has-error">No results</span>
+</template>

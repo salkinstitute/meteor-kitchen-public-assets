@@ -1,0 +1,80 @@
+<template name="PeopleSearch">
+	<div class="page-container container" id="content">
+		<div class="row" id="title_row">
+			<div class="col-md-12">
+			
+				&nbsp;<br/>
+				<div id="page_menu" class="pull-right">
+				</div>
+			</div>
+		</div>	
+		<div class="row">
+			<div class="col-md-12">
+			
+				<form class="form-inline">
+					<div id="people-search-group" class="form-group{{ jsfundcodegroup }}">
+						<input type="text" class="form-control typeahead" id="query" value="{{querytext}}" placeholder="Joe Smith" autocomplete="off" spellcheck="off" data-source="personNamePersonCode" data-select="typeaheadSelected" autofocus="autofocus" required="required" name="query">
+						<button type="submit" class="form-control btn btn-primary">
+							{{#if searching}}
+							<span class="fa fa-circle-o-notch fa-spin fa-fw">
+							</span>
+							{{else}}
+							<span class="fa fa-search">
+							</span>
+							{{/if}}	
+						</button>
+						
+						{{#if searching}}
+							<span id="people-help-block" class="help-block">
+								Searching...
+							</span>
+						{{else}}
+							{{> people_help_block person=person }}
+						{{/if}}
+						
+					</div>
+					
+				</form>	
+				
+				
+		
+			</div>
+			
+		</div>
+		
+			{{#each images}}
+				{{ > image}}
+			{{/each}}
+			
+	</div>
+</template>
+
+<template name="image">
+  <div class="row">
+    <div class="col-md-12">
+      <a href="{{url}}" target="_blank" class="thumbnail">
+        <img src="{{url}}" />
+      </a>
+    </div>
+  </div>
+</template>
+
+<template name="people_help_block">
+	<span id="fund-help-block" class="help-block">
+	{{#if fund }}
+		{{{ helpblock person }}}
+	{{else}}
+		{{{ helpblock }}}
+	{{/if}}
+	</span>
+</template>
+
+<template name="imageView">
+  <div class="imageView">
+    {{#each images}}
+      <div>
+        <a href="{{this.url}}" target="_blank"><img src="{{this.url store='images' }}" alt="" class="thumbnail" /></a>
+      </div>
+    {{/each}}
+  </div>
+</template>

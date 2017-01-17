@@ -1,0 +1,24 @@
+{
+	"roles":[ 
+		{"name":"departments.super","title":"Depts - Super"},
+		{"name":"departments.admin","title":"Depts - Admin"},
+		{"name":"departments.user","title":"Depts - User"},
+		{"name":"departments.blocked","title":"Depts - Block"},		
+		{"name":"gmc_recharges.super","title":"GMC - Super"},
+		{"name":"gmc_recharges.admin","title":"GMC - Admin"},
+		{"name":"gmc_recharges.user","title":"GMC - User"},
+		{"name":"gmc_recharges.blocked","title":"GMC - Block"},	
+		{"name":"funds.super","title":"Funds - Super"},
+		{"name":"funds.admin","title":"Funds - Admin"},
+		{"name":"funds.user","title":"Funds - User"},
+		{"name":"funds.blocked","title":"Funds - Block"},		
+		{"name":"super","title":"SAW - Super"},
+		{"name":"admin","title":"SAW - Admin"},
+		{"name":"user","title":"SAW - User"}
+	],
+	"appPerms":[
+		{"name":"funds.hasProtocolGrantAccess","title":"SAW - Super"},
+		{"name":"funds.hasRestricitions","title":"Funds / RACT based restrictions"}
+	]
+
+}

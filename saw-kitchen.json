@@ -1,0 +1,1678 @@
+{
+	"application": {
+		"title": "SAW",
+		"login_with_password":false,
+		"roles": [ 
+			"departments.super",
+			"departments.admin",
+			"departments.user",
+			"departments.blocked",		
+			"gmc_recharges.super",
+			"gmc_recharges.admin",
+			"gmc_recharges.user",
+			"gmc_recharges.blocked",		
+			"funds.super",
+			"funds.admin",
+			"funds.user",
+			"funds.blocked",	
+			"people.user",
+			"people.super",
+			"people.admin",
+			"people.blocked",	
+			"super",
+			"admin",
+			"user"
+		],
+		"default_role": "user",
+		"send_verification_email": false,
+		"on_user_created_source_file":"on_user_created.js",
+		"stylesheet":{"source":"additional.css"},
+		"theme": "bootswatch-paper",
+		"copy_files": [
+			{
+				"source": "settings.json",
+				"dest": "SETTINGS_DIR"
+			},
+			{
+				"source":"additional.css",
+				"dest":"CLIENT_STYLES_DIR/user_styles.less"
+			},
+			{
+				"source":"login_ad.html",
+				"dest":"CLIENT_DIR"
+			},
+			{
+				"source":"login_ad.js",
+				"dest":"CLIENT_DIR"
+			},
+			{
+				"source":"images/saw.png",
+				"dest":"PUBLIC_IMAGES_DIR"
+			},
+			{
+				"source":"salk_layout.html",
+				"dest":"CLIENT_DIR"
+			},
+			{
+				"source":"typeahead_helpers.js",
+				"dest":"CLIENT_LIB_DIR"
+			}
+				
+		],
+		"use_collection2": false,
+		"packages": {
+			"meteor":[
+				"percolate:synced-cron",
+				"sergeyt:typeahead",
+				"iain:accounting",
+				"accounts-password",
+				"simple:rest",
+				"emdagon:bootstrap-multiselect",
+				"session",
+				"underscorestring:underscore.string",
+				"cfs:standard-packages",
+				"cfs:gridfs", 
+				"cfs:ui",
+				"cfs:s3",
+				"cfs:filesystem",
+				"peerlibrary:aws-sdk"
+			],
+			"npm":["bcrypt","babel-runtime","alasql"]
+		},
+		"server_startup_source_file"  : "server_startup_source_file.js",
+		"client_startup_source_file": "client_startup_source_file.js",
+		"collections" : [
+			{
+				"name":"people",
+				"fields":[
+					{
+						"name":"name",
+						"title":"Name"
+					},
+					{
+						"name":"name_full",
+						"title":"Full Name",
+						"show_in_dataview": false
+					},
+					{
+						"name":"person_code",
+						"title":"Person Code"
+					},
+					{
+						"name":"title",
+						"title":"Title"
+					},
+					{
+						"name":"department",
+						"title":"Dept"
+					},
+					{
+						"name":"employment_status",
+						"title":"Status"
+					},
+					{
+						"name":"employment_type",
+						"title":"Type"
+					},
+					{
+						"name":"supervisor_name",
+						"title":"Supervisor",
+						"show_in_dataview": false
+					},
+					{
+						"name":"phones",
+						"title":"Phones"
+					},
+					{
+						"name":"emails",
+						"title":"Emails"
+					},
+					{
+						"name":"ad_accounts",
+						"title":"AD Accounts",
+						"show_in_dataview": false
+					},
+					{
+						"name":"employee_picture",
+						"title":"Picture",
+						"show_in_dataview": true,
+						"input": "custom",
+						"input_template": "employee_picture.html"
+					}
+					
+				]
+			},
+			
+			{
+				"name":"funds"
+				
+			},
+			{
+				"name":"gmcRecharges",
+				"roles_allowed_to_insert":[
+					"gmc_recharges.super",
+					"gmc_recharges.admin",
+					"super"
+				],
+				"roles_allowed_to_update":[
+					"gmc_recharges.super",
+					"gmc_recharges.admin",
+					"super"
+				],
+				"roles_allowed_to_delete":[
+					"gmc_recharges.super",
+					"super"
+				],
+				"fields":[
+					{	"name":"fund_code",
+						"title":"Fund Code",
+						"required":true,
+						"exportable":true,
+						"max":6,
+						"input": "custom",
+						"input_template": "tt_fund.html",
+					},
+					{
+						"name":"dept_code",
+						"title":"Department Code",
+						"required":true,
+						"exportable":true,
+						
+						"input": "custom",
+						"input_template": "tt_department.html",
+					},
+					{
+						"name":"requestor_name",
+						"title":"Requestor Name",
+						"required":true,
+						"exportable":true,
+						"input": "custom",
+						"input_template": "tt_name.html",
+					},
+					{
+						"name":"charge_description",
+						"title":"Charge Description",
+						"required":true,
+						"exportable":true,
+						"max":200
+						
+					},
+					{
+						"name":"charge_amount",
+						"title":"Charge Amount",
+						"required":true,
+						"exportable":true,
+					
+						"display_helper":"strToMoney"
+					},
+					{
+						"name":"charge_period",
+						"title":"Charge Period",
+						"required":true,
+						"exportable":true,
+						"display_helper":"strToRechargePeriod",
+						"input":"datepicker",
+						"default":"today",
+						"required": true, 
+						"exportable": true
+					}
+				]
+			},
+			{
+				"name":"profile_defaults",
+				"fields":[
+					{
+						"name":"config_name",
+						"title":"Config Name",
+						"required":true,
+						"input":"text"
+					},
+					{ 
+						"name": "is_active", 
+						"title": "Activate", 
+						"default":1,
+						"type": "bool", 
+						"input": "checkbox", 
+						"display_helper": "booleanToYesNo",
+						"show_in_dataview": false,
+						"show_in_read_only_form": false,
+						"exportable": true 
+					},
+					{
+						"name":"profile_conditions",
+						"title":"Default Profile Conditions",
+						"required":true,
+						"type":"array", "input":"crud",
+						"array_item_type":"object",
+						
+						"crud_fields":[
+							{
+								"name":"attribute",
+								"title":"Attribute",
+								"input":"select",
+								"input_items":[
+									{"value":"department","title":"Department Code"},
+									{"value":"title","title":"Title"},
+									{"value":"is_active","title":"AD Status"}
+								],
+								"required": true
+							},
+							{
+								"name":"attribute_operator",
+								"title":"Op",
+								"input":"select",
+								"input_items":[
+									{"value":"=","title":"="},
+									{"value":"!=","title":"!="},
+									{"value":"like","title":"LIKE"},
+									{"value":"in","title":"IN"}
+								],
+								"required": true
+							},
+							
+							{
+								"name":"attribute_value",
+								"title":"Value",
+								"input":"text",
+								"required": true
+							},
+							{
+								"name":"next_condition_operator",
+								"title":"Next Condition Op",
+								"input":"select",
+								"input_items":[
+									{"value":"and","title":"AND"},
+									{"value":"or","title":"OR"}
+								],
+								"required": false
+							},
+						],
+						"exportable": true,
+						"show_in_dataview": false
+					},
+					{	"name": "roles", 
+						"title": "Application / Roles", 
+						"type":"array", "input":"select-multiple",
+						"input_control_class":"multiselect",
+						"lookup_query_name":"roles_select_list",
+						"lookup_key":"name",
+						"lookup_field":"title",
+						"exportable": true,
+						"show_in_dataview": true
+					},	
+					
+					{
+						"name":"execute_when",
+						"title":"Execute When?",
+						"type":"array",
+						"input":"select",
+						"input_items":[
+							{"value":"on_user_created","title":"On created/first login"}
+						],
+						"required": true
+					}
+					
+				]
+			},
+			{
+				"name":"departments_activity",
+				"fields":[
+					
+					{
+						"name":"dept_code",
+						"title":"Department",
+						"type":"string"
+					},
+					{
+						"name":"activity_type",
+						"title":"Type",
+						"type":"string"
+					},
+					{
+						"name":"details",
+						"title":"Details",
+						"type":"string"
+					},
+					{
+						"name":"action_needed",
+						"title":"Action Needed?",
+						"type":"bool",
+						"display_helper": "booleanToYesNo"
+					},
+					{
+						"name":"createdAt",
+						"title":"Action Date",
+						"type":"date",
+						"type": "date", 
+						"format": "MM-DD-YYYY"
+					}
+				]
+			},	
+			
+			{
+				"name":"people_activity",
+				"fields":[
+					
+					{
+						"name":"person_code",
+						"title":"Person Code",
+						"type":"string"
+					},
+					{
+						"name":"activity_type",
+						"title":"Type",
+						"type":"string"
+					},
+					{
+						"name":"details",
+						"title":"Details",
+						"type":"string"
+					},
+					{
+						"name":"action_needed",
+						"title":"Action Needed?",
+						"type":"bool",
+						"display_helper": "booleanToYesNo"
+					},
+					{
+						"name":"createdAt",
+						"title":"Action Date",
+						"type":"date",
+						"type": "date", 
+						"format": "MM-DD-YYYY"
+					}
+				]
+			},	
+			
+			{
+				"name": "departments",
+				"roles_allowed_to_insert":[
+					"departments.super",
+					"departments.admin",
+					"super"
+				],
+				"roles_allowed_to_update":[
+					"departments.super",
+					"departments.admin",
+					"super"
+				],
+				"roles_allowed_to_delete":[
+					"departments.super",
+					"super"
+				],
+				"fields" : [
+					{ 
+						"name": "dept_code", 
+						"title": "Department Code", 
+						"required": true, 
+						"exportable": true, 
+						"max":10 
+					},
+					{ 
+						"name": "dept_type", 
+						"title": "Department Type", 
+						"input":"select",
+						"input_items":[
+							{"value":"Admin","title":"Admin"},
+							{"value":"Labs","title":"Labs"},
+							{"value":"LS","title":"Lab Support"}
+						],
+						"required": true, 
+						"exportable": true 	
+					},
+					{
+						"name": "dept_head_person_code",
+						"type":"string",
+						"title": "Department Head Person Code",
+						"required": true,
+						"input": "custom",
+						"input_template": "tt_name_person_code.html",
+					
+						"show_in_dataview": false,
+						"show_in_read_only_form": false,
+						"exportable": true
+					},					
+					{
+						"name": "dept_head_name",
+						"type":"string",
+						"title": "Department Head Name",
+					
+						
+						"show_in_data_view": true,
+						"show_in_read_only_form": true,
+						
+						"exportable": true
+					},		
+					{ 
+						"name": "dept_name", 
+						"title": "Department Name", 
+						"required": true, 
+						"exportable": true, 
+						"max":10 
+					},
+					{
+						"name":"fund_change_email",
+						"type":"string",
+						"title":"Fund Change Email",
+						"input":"custom",
+						"input_template": "tt_name_email.html",
+						"show_in_dataview": false,
+						"show_in_read_only_form": false,
+						"exportable": true
+					},
+					{ 
+						"name": "contacts", 
+						"title": "Contacts", 
+						"type":"array", "input":"crud",
+						"array_item_type":"object",
+						
+						"crud_fields":[
+							{
+								"name":"contact_type",
+								"title":"Contact Type",
+								"input":"select",
+								"input_items":[
+									{"value":"Admin","title":"Admin"},
+									{"value":"Science","title":"Science"},
+									{"value":"Financial","title":"Financial"}
+								],
+								"required": true
+							},
+							{
+								"name":"contact_email",
+								"title":"Contact Email",
+								"input":"custom",
+								"type":"string",
+								"input_template": "tt_name_email.html",
+								"exportable":true
+							}
+						],
+						"exportable": true,
+						"show_in_dataview": false
+					},					
+					{ 
+						"name": "default_funds", 
+						"title": "Default Funds", 
+						"type": "array", "input":"crud",
+						"array_item_type":"object",
+						"crud_fields":[
+							{
+								"name":"default_type",
+								"title":"Default Type",
+								"input":"select",
+								"input_items":[
+									{"value":"FS Recharges","title":"FS Recharges"},
+									{"value":"IT Recharges","title":"IT Recharges"},
+									{"value":"General Recharges","title":"General Recharges"}
+								],
+								"required": true
+							},
+							{
+								"name":"override_validation",
+								"default":0,
+								"title":"Override Validation/Replacement?",
+								"type": "bool", 
+								"input": "checkbox", 
+								"display_helper": "booleanToYesNo",
+							},
+							{
+								"name":"default_fund",
+								"title":"Default Fund",
+								"input":"custom",
+								"type":"string",
+								"input_template": "tt_fund.html",
+								"exportable":true,
+								"max":10
+							}
+						],
+						"exportable": true,
+						"show_in_dataview": false
+					},
+					{ 
+						"name": "note", 
+						"title": "Note", 
+						"input": "textarea", 
+						"exportable": true,
+						"show_in_dataview": false 
+					},
+					{ 
+						"name": "is_core", 
+						"default":0,
+						"title": "Core", 
+						"type": "bool", 
+						"input": "checkbox", 
+						"display_helper": "booleanToYesNo",
+						"show_in_dataview":false,
+						"exportable": true 
+					},
+					
+					
+					{ 
+						"name": "is_active", 
+						"title": "Active", 
+						"default":1,
+						"type": "bool", 
+						"input": "checkbox", 
+						"display_helper": "booleanToYesNo",
+						"show_in_dataview": false,
+						"show_in_read_only_form": false,
+						"exportable": true 
+					},
+					{ 
+						"name": "is_active", 
+						"title": "Active", 
+						"type": "bool", 
+						"input": "text", 
+						"display_helper": "booleanToYesNo",
+						"show_in_dataview": true,
+						"show_in_read_only_form": true,
+						"show_in_update_form": false,
+						"show_in_insert_form": false,
+						"show_in_edit_form": false,
+						"exportable": true 
+					}
+				]
+			},
+			{ 
+				"name":"adUsers"
+			},
+			{
+				"name":"xtroles",
+				"roles_allowed_to_insert":[
+					"super"
+				],
+				"roles_allowed_to_update":[
+					"super"
+				],
+				"roles_allowed_to_delete":[
+					"super"
+				],
+				"fields" : [
+					{
+						"name":"name",
+						"title":"Role Name",
+						"input":"text",
+						"required": true,
+						"exportable":true,
+					},
+					{
+						"name":"title",
+						"title":"Role Title",
+						"input":"text",
+						"required":true,
+						"exportable":true
+					}
+				]
+			},
+			
+		],
+
+		"queries": [
+			{
+				"name":"employeePicture",
+				"collection":"employeePictures",
+				"options":"  {\"accessKeyId\":  \"Meteor.settings.AWS.accessKeyId\", 
+  \"secretAccessKey\": \"Meteor.settings.AWS.secretAccessKey\", 
+  \"bucket\": \"salk-employee-pics\"	}",
+				"find_one":true
+			},
+			{
+				"name":"people",
+				"collection":"people",
+				"filter":"{\"name\": \":searchExp\"}"
+			}, 
+			{
+				"name": "gmcRecharges",
+				"collection": "gmcRecharges",
+				"filter": "{}"
+			},
+			{
+				"name": "gmcRecharge",
+				"collection": "gmcRecharges",
+				"filter": "{ \"_id\": \":gmcRechargeId\" }",
+				"find_one": true
+			},
+			{
+				"name": "gmcRecharges_empty",
+				"collection": "gmcRecharges",
+				"filter": "{ \"_id\": null }",
+				"find_one": true
+			},
+			{
+				"name": "admin_xtroles",
+				"collection": "xtroles",
+				"filter": "{}",
+				"options": "{ \"sort\": [[ \"title\", \"asc\"],[\"name\",\"asc\"]] }"
+			},
+			{
+				"name": "admin_xtroles_empty",
+				"collection": "xtroles",
+				"filter": "{ \"_id\": null }",
+				"find_one": true
+			},
+			{
+				"name": "admin_xtrole",
+				"collection": "xtroles",
+				"filter": "{ \"_id\": \":xtroleId\" }",
+				"find_one": true
+			},
+			
+			
+			{
+				"name": "admin_profile_defaults",
+				"collection": "profile_defaults",
+				"filter": "{}"
+			},
+			{
+				"name": "admin_profile_defaults_empty",
+				"collection": "profile_defaults",
+				"filter": "{ \"_id\": null }",
+				"find_one": true
+			},
+			{
+				"name": "admin_profile_default",
+				"collection": "profile_defaults",
+				"filter": "{ \"_id\": \":profile_defaultId\" }",
+				"find_one": true
+			},
+			
+			{
+				"name": "roles_select_list",
+				"collection": "xtroles",
+				"filter": "{}",
+				
+			},
+			{
+				"name": "department_list",
+				"collection": "departments",
+				"filter": "{}",
+				"options": "{ \"sort\": [[ \"is_active\", \"desc\"],[\"dept_code\",\"asc\"]] }"
+				
+			},
+			{
+				"name": "departments_activity",
+				"collection": "departments_activity",
+				"filter": "{}",
+				
+				"options": "{ \"sort\": [[ \"action_needed\", \"desc\"],[\"createdAt\",\"desc\"]] }"
+				
+			},
+			{
+				"name": "funds",
+				"collection": "funds",
+				
+				"filter": "{ \"$and\": [ 
+					{ \"fund_code\": { \"$ne\": \"990000\" } }, 
+					{ \"fund_code\": { \"$ne\": \"212190\" } },
+					{ \"fund_code\": { \"$ne\": \"212191\" } },
+					{ \"fund_code\": { \"$not\": \"new RegExp(/^4.*/)\" } },
+					{ \"fund_code\": { \"$not\": \"new RegExp(/^69.*/)\" } },
+					{ \"fund_code\": { \"$not\": \"new RegExp(/^2128.*/)\" } }
+				]
+				}",
+				"options": "{ \"sort\": [[ \"fund_code\", \"asc\"]] }"
+			},
+			{
+				"name":"funds_home",
+				"collection":"funds",
+				"options": "{ \"transform\": \"function(doc) { return doc.Banner; }\", \"sort\": [\"fund_code\"] }"
+			},
+			{
+				"name": "fund",
+				"collection": "funds",
+				"filter": "{ \"_id\": \":fundId\" }",
+				"find_one": true
+			},
+			{
+				"name": "person",
+				"collection": "people",
+				"filter": "{ \"_id\": \":personId\" }",
+				"find_one": true
+			},
+			{
+				"name": "funds_empty",
+				"collection": "funds",
+				"filter": "{ \"_id\": null }",
+				"find_one": true
+			},
+			
+			{
+				"name": "admin_users",
+				"collection": "users",
+				"filter": "{}"
+			},
+			{
+				"name": "admin_user",
+				"collection": "users",
+				"filter": "{ \"_id\": \":userId\" }",
+				"find_one": true
+			},
+			{
+				"name": "users_null",
+				"collection": "users",
+				"filter": "{ \"_id\": null }",
+				"find_one": true
+			},
+			{
+				"name": "current_user_data",
+				"collection": "users",
+				"filter": "{ \"_id\": \"Meteor.userId()\" }",
+				"find_one": true
+			},
+			{
+				"name": "departments",
+				"collection": "departments",
+				"filter": "{}",
+				"options": "{ \"sort\": [[ \"dept_code\", \"asc\"],[\"dept_name\",\"asc\"]] }"
+				
+			},
+			{
+				"name": "departments_empty",
+				"collection": "departments",
+				"filter": "{ \"_id\": null }",
+				"find_one": true
+			},
+			{
+				"name": "department",
+				"collection": "departments",
+				"filter": "{ \"_id\": \":departmentId\" }",
+				"find_one": true
+				
+			},
+			
+			{
+				"name": "adusers",
+				"collection": "AdUsers",
+				
+				"filter": "{\"distinguishedname\": { \"$not\": \"new RegExp(/.*DISABLED.*/)\"}}",
+				"options": "{ \"sort\": [[ \"displayname\", \"asc\"],[ \"samaccountname\", \"asc\"]] }"
+			},
+			{
+				"name":"aduser_employeeid",
+				"collection":"adUsers",
+				"filter":"{ \"employeeid\": \":employeeId\" }",
+				"find_one": true,
+				"options": "{ \"sort\": [[ \"samaccountname\", \"asc\"],[ \"employeeid\", \"asc\"]] }"
+			}
+			
+		],
+
+		"public_zone": {
+			"pages": [
+				{
+					"name": "home_public",
+					"title": "",
+					"components": [
+						{
+							"name": "home_jumbotron",
+							"title": "SAW",
+							"type": "jumbotron",
+							"text": "<b>Please login.</b>.",
+							"button_title": "Login &raquo;",
+							"button_route": "login"
+						}
+					]
+				},
+				{ 
+					"name": "login", 
+					"custom_template": "login_ad"
+					
+				},
+				
+				{ "name": "verify_email", "template": "verify_email", "route_params": ["verifyEmailToken"] },
+				{ "name": "forgot_password", "template": "forgot_password" },
+				{ "name": "reset_password", "template": "reset_password", "route_params": ["resetPasswordToken"] }
+			],
+
+			"components": [
+				{
+					"name": "left_menu",
+					"type": "menu",
+					"class": "nav navbar-nav",
+					"dest_selector": "#menu",
+					"items": [
+						{ "title": "Home", "route": "home_public" }
+						
+					]
+				},
+
+				{
+					"name": "right_menu",
+					"type": "menu",
+					"class": "nav navbar-nav navbar-right",
+					"dest_selector": "#menu",
+					"items": [
+					
+						{ "title": "Login", "route": "login" }
+					]
+				}
+			]
+		},
+
+		"private_zone": {
+			
+			"pages": [
+				
+				{ 
+					"name": "home_private", 
+					"title": "Welcome {{userDisplayName}}!",
+					"components": [
+						{
+							"name": "home_private_jumbotron",
+							"title": "SAW Activity",
+							"type": "jumbotron",
+							"text": "<b>Recent activity to go here, ingress from EP, missing contacts, expired funds, etc, new departments, etc.  So far only departments activity. </b>.",
+							"query_name": "departments_activity",
+							"query_params": []
+				
+						},
+						{
+							"name": "view",
+							"type": "data_view",
+							"title": "Departments Activity",
+							"text_if_empty": "No activity :(",
+		
+							"query_name": "departments_activity",
+							"query_params": [],
+
+							"details_route": "departments.details",
+							"details_route_params": [
+								{ "name": "departmentId", "value": "this.departmentId" }
+							]
+						}
+						
+					]
+				},
+				
+				{
+					"name": "departments",
+					"roles": [
+						"departments.user",
+						"departments.admin",
+						"departments.super",
+						"super"
+					],
+			
+					"components": [
+						{
+							"name": "view",
+							"type": "data_view",
+							"title": "Departments",
+							"text_if_empty": "No departments :(",
+		
+							"query_name": "departments",
+							"query_params": [],
+							
+							"insert_route": "departments.insert",
+							"edit_route": "departments.edit",
+							"edit_route_params": [
+								{ "name": "departmentId", "value": "this._id" }
+							],
+							"details_route": "departments.details",
+							"details_route_params": [
+								{ "name": "departmentId", "value": "this._id" }
+							],
+							"roles": [
+								"departments.user",
+								"departments.admin",
+								"departments.super",
+								"super"
+							],
+						}
+					],
+					"pages": [
+						{
+							"name": "insert",
+							"roles": [
+									
+										"departments.admin",
+										"departments.super",
+										"super"
+									],
+							"components": [
+								{
+									
+									"name": "insert_form",
+									"type": "form",
+									"mode": "insert",
+									"title": "New department",
+
+									"query_name": "departments_empty",
+									"query_params": [],
+									
+									"submit_route": "departments",
+									"cancel_route": "departments",
+									"template_rendered_code":"
+									Meteor.typeahead.inject();
+									",
+									"helpers_code":
+										"\"adUsersPersonCode\" : function(query, sync, callback) {
+      Meteor.call('searchAdUsers', query, {}, function(err, res) {
+        if (err) {
+          console.log(err);
+          return;
+        }
+        callback(res.map(function(it){ return {value:it.displayname,id:it.employeeid}; }));
+      });
+    },
+										\"typeaheadSelectedDeptHeadName\":function(event, suggestion, datasetName){
+											typeaheadSelectedDeptHeadName(event, suggestion, datasetName);
+										},
+										\"typeaheadSelected\":function(event, suggestion, datasetName){
+											typeaheadSelected(event, suggestion, datasetName);
+										},
+										\"adUsersEmail\":function(query, sync, callback) {
+      Meteor.call('searchAdUsers', query, {}, function(err, res) {
+        if (err) {
+          console.log(err);
+          return;
+        }
+        callback(res.map(function(it){ return {value:it.displayname+'('+it.mail+')',id:it.mail}; }));
+      });
+    }"
+									
+								}
+								
+							]
+						},
+						{
+							"name": "details",
+							"route_params": ["departmentId"],
+							
+							"components": [
+								{
+									"name": "details_form",
+									"type": "form",
+									"mode": "read_only",
+									"title": "Details",
+									"layout": "horizontal",
+
+									"query_name": "department",
+									"query_params": [],
+
+									"close_route": "departments",
+									"back_route": "departments"
+								}
+							]
+						},
+
+						{
+							"name": "edit",
+							"route_params": ["departmentId"],
+							"roles": [
+									
+								"departments.admin",
+								"departments.super",
+								"super"
+							],
+							"components": [
+								{
+									"name": "edit_form",
+									"type": "form",
+									"mode": "update",
+									"title": "Edit department",
+									"submit_route": "departments",
+									"cancel_route": "departments",
+									"template_rendered_code":
+									"Meteor.typeahead.inject();
+									",
+									"helpers_code":
+										"\"adUsersPersonCode\" : function(query, sync, callback) {
+      Meteor.call('searchAdUsers', query, {}, function(err, res) {
+        if (err) {
+          console.log(err);
+          return;
+        }
+        callback(res.map(function(it){ return {value:it.displayname,id:it.employeeid}; }));
+      });
+    },
+										\"typeaheadSelectedDeptHeadName\":function(event, suggestion, datasetName){
+											typeaheadSelectedDeptHeadName(event, suggestion, datasetName);
+										},
+										\"typeaheadSelected\":function(event, suggestion, datasetName){
+											typeaheadSelected(event, suggestion, datasetName);
+										},
+										\"adUsersEmail\":function(query, sync, callback) {
+      Meteor.call('searchAdUsers', query, {}, function(err, res) {
+        if (err) {
+          console.log(err);
+          return;
+        }
+        callback(res.map(function(it){ return {value:it.displayname+'('+it.mail+')',id:it.mail}; }));
+      });
+    }",
+									"query_name": "department",
+									"query_params": []
+								},
+							]
+						}
+					]
+				},
+				{ 
+					"name": "funds", 
+					"custom_template": "custom_components/funds",
+					"roles": [
+						"super",
+						"funds.super",
+						"funds.admin",
+						"funds.user"	
+					]
+				},
+				{ 
+					"name": "people", 
+					"roles": [
+								"super",
+								"admin",
+								"people.super",
+								"people.admin",
+								"people.user"	
+							],
+					"components":[
+						{
+							"name": "view",
+							"type": "data_view",
+							"title": "People",
+							"text_if_empty": "No people :(",
+		
+							"query_name": "people",
+							"query_params": [
+								{"name":"searchExp","value":"new RegExp(Session.get('searchString'), 'i')"}
+							],
+							"template_rendered_code":"this.autorun(function() {
+ var searchString = pageSession.get(\"SEARCH_STRING_SESSION_VAR\") || null;
+    Session.set(\"searchString\", searchString);
+    console.log(searchString);
+});",
+
+							"details_route": "people.details",
+							"details_route_params": [
+								{ "name": "personId", "value": "this._id" }
+							]
+						}
+					],
+					
+					"pages": [
+						
+						{
+							"name": "details",
+							"route_params": ["personId"],
+							
+							"components": [
+								{
+									"name": "details_form",
+									"type": "form",
+									"mode": "read_only",
+									"title": "Details",
+									"layout": "horizontal",
+
+									"query_name": "person",
+									"query_params": [],
+
+									"close_route": "people",
+									"back_route": "people"
+								}
+							]
+						}
+					]	
+				},
+				{
+					"name": "gmcRecharges",
+					"roles": [
+						"super",
+						"gmc_recharges.super",
+						"gmc_recharges.admin",
+						"gmc_recharges.user"	
+					],
+					"components": [
+						{
+							"name": "view",
+							"type": "data_view",
+							"title": "GMC Recharges",
+							"text_if_empty": "No Recharges :(",
+		
+							"query_name": "gmcRecharges",
+							"query_params": [],
+
+							"insert_route": "gmcRecharges.insert",
+							"edit_route": "gmcRecharges.edit",
+							"edit_route_params": [
+								{ "name": "gmcRechargeId", "value": "this._id" }
+							],
+							"details_route": "gmcRecharges.details",
+							"details_route_params": [
+								{ "name": "gmcRechargeId", "value": "this._id" }
+							]
+						}
+					],
+					"pages": [
+						{
+							"name": "insert",
+							"components": [
+								{
+									"name": "insert_form",
+									"type": "form",
+									"mode": "insert",
+									"title": "New gmcRecharge",
+
+									"query_name": "gmcRecharges_empty",
+									"query_params": [],
+
+									"submit_route": "gmcRecharges",
+									"cancel_route": "gmcRecharges",
+									"template_rendered_code":"Meteor.typeahead.inject();",
+									"helpers_code":"\"adUsersName\" : function(query, sync, callback) {
+      Meteor.call('searchAdUsers', query, {}, function(err, res) {
+        if (err) {
+          console.log(err);
+          return;
+        }
+        callback(res.map(function(it){ return {value:it.displayname,id:it.displayname}; }));
+      });
+    },
+									\"fundsFundCode\":function(query, sync, callback) {
+      Meteor.call('searchFunds', query, {}, function(err, res) {
+        if (err) {
+          console.log(err);
+          return;
+        }
+        callback(res.map(function(it){ return {value:it.fund_code+' ('+it.Banner.FUND_TITLE+')',id:it.fund_code}; }));
+      });
+    },
+	
+	\"typeaheadSelected\":function(event, suggestion, datasetName){
+		typeaheadSelected(event, suggestion, datasetName);
+	},
+								\"departmentsDeptCode\":function(query, sync, callback) {
+      Meteor.call('searchDepartments', query, {}, function(err, res) {
+        if (err) {
+          console.log(err);
+          return;
+        }
+        callback(res.map(function(it){ return {value:it.dept_code+' ('+it.dept_name+')',id:it.dept_code}; }));
+      });
+    },\"typeaheadSelected\":function(event, suggestion, datasetName){
+											typeaheadSelected(event, suggestion, datasetName);
+										}",
+								}
+							]
+						},
+						{
+							"name": "details",
+							"route_params": ["gmcRechargeId"],
+							"components": [
+								{
+									"name": "details_form",
+									"type": "form",
+									"mode": "read_only",
+									"title": "Details",
+									"layout": "horizontal",
+
+									"query_name": "gmcRecharge",
+									"query_params": [],
+
+									"close_route": "gmcRecharges",
+									"back_route": "gmcRecharges"
+								}
+							]
+						},
+
+						{
+							"name": "edit",
+							"route_params": ["gmcRechargeId"],
+							
+							"components": [
+								{
+									"name": "edit_form",
+									"type": "form",
+									"mode": "update",
+									"title": "Edit gmcRecharge",
+									"submit_route": "gmcRecharges",
+									"cancel_route": "gmcRecharges",
+									,
+									"template_rendered_code":"Meteor.typeahead.inject();",
+									"helpers_code":"\"adUsersName\" : function(query, sync, callback) {
+      Meteor.call('searchAdUsers', query, {}, function(err, res) {
+        if (err) {
+          console.log(err);
+          return;
+        }
+        callback(res.map(function(it){ return {value:it.displayname,id:it.displayname}; }));
+      });
+    },
+									\"fundsFundCode\":function(query, sync, callback) {
+      Meteor.call('searchFunds', query, {}, function(err, res) {
+        if (err) {
+          console.log(err);
+          return;
+        }
+        callback(res.map(function(it){ return {value:it.fund_code+' ('+it.Banner.FUND_TITLE+')',id:it.fund_code}; }));
+      });
+    },
+	
+	typeaheadSelected:function(event, suggestion, datasetName){
+		typeaheadSelected(event, suggestion, datasetName);
+	},
+								\"departmentsDeptCode\":function(query, sync, callback) {
+      Meteor.call('searchDepartments', query, {}, function(err, res) {
+        if (err) {
+          console.log(err);
+          return;
+        }
+        callback(res.map(function(it){ return {value:it.dept_code+' ('+it.dept_name+')',id:it.dept_code}; }));
+      });
+    },
+									
+									\"strToMoney\":function(value){
+									return accounting.formatMoney(value);
+									}",
+									"query_name": "gmcRecharge",
+									"query_params": []
+								},
+							]
+						}
+					]
+				},
+				{
+					"name": "admin",
+					
+					"roles": [
+						"super",
+						"admin"	
+					],
+					
+					"pages": [
+					
+						{
+					"name": "xtroles",
+					"title":"",
+					"components": [
+						{
+							"name": "view",
+							"type": "data_view",
+							"title": "Roles",
+							"text_if_empty": "No Roles :(",
+
+							"query_name": "admin_xtroles",
+							"query_params": [],
+
+							"insert_route": "admin.xtroles.insert",
+							"edit_route": "admin.xtroles.edit",
+							"edit_route_params": [
+								{ "name": "xtroleId", "value": "this._id" }
+							],
+							"details_route": "admin.xtroles.details",
+							"details_route_params": [
+								{ "name": "xtroleId", "value": "this._id" }
+							]
+						}
+					],
+					"pages": [
+						{
+							"name": "insert",
+							"components": [
+								{
+									"name": "insert_form",
+									"type": "form",
+									"mode": "insert",
+									"title": "New Role Configuration",
+
+									"query_name": "admin_xtroles_empty",
+									"query_params": [],
+
+									"submit_route": "admin.xtroles",
+									"cancel_route": "admin.xtroles"
+								}
+							]
+						},
+						{
+							"name": "details",
+							"route_params": ["xtroleId"],
+							"components": [
+								{
+									"name": "details_form",
+									"type": "form",
+									"mode": "read_only",
+									"title": "Role Configuration Details",
+									"layout": "horizontal",
+
+									"query_name": "admin_xtrole",
+									"query_params": [],
+
+									"close_route": "admin.xtroles",
+									"back_route": "admin.xtroles"
+								}
+							]
+						},
+
+						{
+							"name": "edit",
+							"route_params": ["xtroleId"],
+							"components": [
+								{
+									"name": "edit_form",
+									"type": "form",
+									"mode": "update",
+									"title": "Edit Role configuration",
+									"submit_route": "admin.xtroles",
+									"cancel_route": "admin.xtroles",
+
+									"query_name": "admin_xtrole",
+									"query_params": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "profile_defaults",
+					"title":"",
+					"components": [
+						{
+							"name": "view",
+							"type": "data_view",
+							"title": "Profile Defaults",
+							"text_if_empty": "No configs :(",
+
+							"query_name": "admin_profile_defaults",
+							"query_params": [],
+
+							"insert_route": "admin.profile_defaults.insert",
+							"edit_route": "admin.profile_defaults.edit",
+							"edit_route_params": [
+								{ "name": "profile_defaultId", "value": "this._id" }
+							],
+							"details_route": "admin.profile_defaults.details",
+							"details_route_params": [
+								{ "name": "profile_defaultId", "value": "this._id" }
+							]
+						}
+					],
+					"pages": [
+						{
+							"name": "insert",
+							"components": [
+								{
+									"name": "insert_form",
+									"type": "form",
+									"mode": "insert",
+									"title": "New Configuration",
+
+									"query_name": "admin_profile_defaults_empty",
+									"query_params": [],
+									"template_rendered_code":
+									"$('.multiselect').multiselect();",
+									"submit_route": "admin.profile_defaults",
+									"cancel_route": "admin.profile_defaults"
+								}
+							]
+						},
+						{
+							"name": "details",
+							"route_params": ["profile_defaultId"],
+							"components": [
+								{
+									"name": "details_form",
+									"type": "form",
+									"mode": "read_only",
+									"title": "Perm. Configuration Details",
+									"layout": "horizontal",
+
+									"query_name": "admin_profile_default",
+									"query_params": [],
+
+									"close_route": "admin.profile_defaults",
+									"back_route": "admin.profile_defaults"
+								}
+							]
+						},
+
+						{
+							"name": "edit",
+							"route_params": ["profile_defaultId"],
+							"components": [
+								{
+									"name": "edit_form",
+									"type": "form",
+									"mode": "update",
+									"title": "Edit Configuration",
+									"submit_route": "admin.profile_defaults",
+									"cancel_route": "admin.profile_defaults",
+									"template_rendered_code":
+									"$('.multiselect').multiselect();",
+									"query_name": "admin_profile_default",
+									"query_params": []
+								}
+							]
+						}
+					]
+				},
+						{
+							"name": "users",
+							"components": [
+								{
+									"name": "view",
+									"type": "data_view",
+									"title": "Users",
+									"text_if_empty": "No users yet",
+									"query_name": "admin_users",
+									"query_params": [],
+
+									"fields": [
+										{ "name": "profile.displayname", "title": "Name"},
+									
+										{ "name": "roles", "title": "Roles" }
+									],
+
+									"insert_route": "admin.users.insert",
+
+									"edit_route": "admin.users.edit",
+									"edit_route_params": [
+										{ "name": "userId", "value": "this._id" }
+									],
+
+									"details_route": "admin.users.details",
+									"details_route_params": [
+										{ "name": "userId", "value": "this._id" }
+									]
+								}
+							],
+							"pages": [
+								{
+									"name": "details",
+									"route_params": ["userId"],
+									"components": [
+										{
+											"name": "details_form",
+											"type": "form",
+											"mode": "read_only",
+											"title": "User details",
+											"query_name": "admin_user",
+											"query_params": [],
+											"fields": [
+												{ "name": "profile.displayname", "title": "Name"},
+												{ "name": "username", "title": "Username" },
+												{	"name": "roles", 
+													"title": "Application / Roles", 
+													"type":"string"
+												}
+											],
+											"close_route": "admin.users",
+											"back_route": "admin.users"
+										}
+									]
+								},
+								{
+									"name": "insert",
+									"components": [
+										{
+											"name": "insert_form",
+											"type": "form",
+											"mode": "insert",
+											"title": "Add new user",
+											"submit_route": "admin.users",
+											"cancel_route": "admin.users",
+											"query_name": "users_null",
+											"query_params": [],
+											"template_rendered_code":
+											"Meteor.typeahead.inject();
+											$('.multiselect').multiselect();
+											",
+											"submit_code":"Meteor.call(\"createUserAccountSalk\", values, function(e) { 
+											console.log(values);
+											if(e) errorAction(e); else submitAction(); });",
+									"helpers_code":
+									"\"adUsersName\": function(query, sync, callback) {
+      Meteor.call('searchAdUsers', query, {}, function(err, res) {
+        if (err) {
+          console.log(err);
+          return;
+        }
+        callback(res.map(function(it){ return {value:it.displayname,id:it.displayname,samaccountname:it.samaccountname}; }));
+      });
+    },
+									\"tt_selected\":function(event, suggestion, datasetName) {$('input[name=\"'+event.target.name+'\"]').typeahead('val', suggestion.id);
+									$('input[name=\"username\"]').val(suggestion.samaccountname);
+									}",
+											"fields": [
+												{ 
+													"name": "profile.displayname", 
+													"title": "Name", 
+													"required": true ,
+													"input": "custom",
+													"input_template": "tt_name.html"
+												},
+												{ 
+													"name": "username", 
+													"title": "Username", 
+													"input": "custom",
+													"required": true,
+													"input_template": "username.html" 
+												},
+												{	"name": "roles", 
+													"title": "Application / Roles", 
+													"type":"array", "input":"select-multiple",
+													"input_control_class":"multiselect",
+													"lookup_query_name":"roles_select_list",
+													"lookup_key":"name",
+													"lookup_field":"title",
+													"exportable": true,
+													"show_in_dataview": false
+												}
+											]
+										},
+										
+									]
+								},
+								{
+									"name": "edit",
+									"route_params": ["userId"],
+									"components": [
+										{
+											"name": "edit_form",
+											"type": "form",
+											"mode": "update",
+											"title": "Edit user",
+											"submit_route": "admin.users",
+											"cancel_route": "admin.users",
+											"query_name": "admin_user",
+											"query_params": [],
+											"submit_code":"Meteor.call(\"updateUserAccountSalk\", t.data.admin_user._id, values, function(e) { if(e) errorAction(e); else submitAction(); });",
+											"template_rendered_code":"
+											$('.multiselect').multiselect();
+											",
+											"fields": [
+												{ 	
+													"name": "profile.displayname", 
+													"title": "Name", 
+													"required": true 
+												},
+												{ 
+													"name": "username", 
+													"title": "Username", 	
+													"input": "read-only",
+													"required": true 
+												},
+												{	"name": "roles", 
+													"title": "Application / Roles", 
+													"type":"array", "input":"select-multiple",
+													"input_control_class":"multiselect",
+													"lookup_query_name":"roles_select_list",
+													"lookup_key":"name",
+													"lookup_field":"title",
+													"exportable": true,
+													"show_in_dataview": false
+												}
+											]
+										}
+									]
+								}
+							]
+						}
+
+					],
+
+					"components": [
+						{
+							"name": "side_menu",
+							"type": "menu",
+							"class": "nav nav-stacked nav-pills",
+							"items": [
+								{ "title": "Users", "route": "admin.users" },
+								{ "title": "Roles", "route": "admin.xtroles" },
+								{ "title": "Profile Defaults", "route": "admin.profile_defaults" }
+							]
+						}
+					]
+				},
+
+				
+
+				{ "name": "logout", "template": "logout" }
+			],
+
+			"components": [
+				{
+					"name": "left_menu",
+					
+					"type": "menu",
+					"class": "nav navbar-nav",
+					"dest_selector": "#menu",
+					"items": [
+						{ "title": "Home", "route": "home_private", "icon_class": "fa fa-home" },
+						
+						{ "title": "People", "route": "people", "icon_class": "fa fa-group" },
+						
+						{ "title": "Departments", "route": "departments", "icon_class": "fa fa-building-o" },
+						
+						{ "title": "Fund Checker", "route": "funds", "icon_class": "fa fa-check-circle-o" },
+						
+						{ "title": "GMC", "route": "gmcRecharges", "icon_class": "fa fa-flask" },
+						
+						{ "title": "Postage", "route": "postage", "icon_class": "fa fa-envelope" },
+						{ "title": "Grants", "route": "grants", "icon_class": "fa fa-trophy" },
+						{ "title": "Charts", "route": "charts", "icon_class": "fa fa-line-chart" }
+						
+					]
+				},
+				{
+					"name": "right_menu",
+					"type": "menu",
+					"class": "nav navbar-nav navbar-right",
+					"dest_selector": "#menu",
+					"items": [
+						{ "title": "Admin", "route": "admin", "icon_class": "fa fa-wrench" },
+
+						{
+							"title": "{{userMail}}",
+							"items": [
+								
+								{ "title": "Logout", "route": "logout" }
+							],
+							"icon_class": "fa fa-cog"
+						}
+					]
+				}
+			]
+		}
+	}
+}
